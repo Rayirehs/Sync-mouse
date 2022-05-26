@@ -1,3 +1,4 @@
+'use strict';
 let robot = require("robotjs");
 const ini = require('ini');
 const fs = require('fs');
@@ -11,7 +12,8 @@ const masterIp = config.setup.ipMaster
 
 
     if(config.setup.mode == "master"){
-
+        const ioHook = require('iohook');
+        ioHook.start();
         console.log("im the master...")
        // create the master server
        const { Server } = require("socket.io");
@@ -25,13 +27,29 @@ const masterIp = config.setup.ipMaster
         io.on('connection', function(socket)
         {
             console.log('Client connected.');
+            
+           /* ioHook.on("mousemove", event => {
+                console.log(event);
+                // result: {type: 'mousemove',x: 700,y: 400}
+               // socket.emit("sendPos", event)
+              });*/
+
+
+            ioHook.on("mousewheel", event => {
+                console.log("mousewheel"); 
+                console.log(event);
+
+                // result: {type: 'mousemove',x: 700,y: 400}
+                socket.emit("sendPos", event) 
+              });
+              
 
             // Disconnect listener
+            
             socket.on('disconnect', function() {
                 console.log('Client disconnected.');
             });
         });
-
 
 
         server.listen(PORT, () => {
@@ -53,6 +71,13 @@ const masterIp = config.setup.ipMaster
         socket.on('connect', function () {
 
             console.log("connected!")
+            socket.on('sendPos', function(mouse) {
+                console.log(mouse);
+            });
+
+            socket.on('disconnect', function() {
+                console.log('server down.');
+            });
         })
     }
 
