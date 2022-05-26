@@ -72,7 +72,15 @@ const masterIp = config.setup.ipMaster
 
             console.log("connected!")
             socket.on('sendPos', function(mouse) {
-                console.log(mouse);
+                console.log(mouse.rotation);
+
+                if(mouse.rotation == 1){
+                    robot.scrollMouse(0,-100)
+                }
+                else if(mouse.rotation == -1){
+                    robot.scrollMouse(0,100)
+                }
+
             });
 
             socket.on('disconnect', function() {
